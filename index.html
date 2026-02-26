@@ -1078,7 +1078,7 @@ você pode imprimir quantas vezes desejar.</h4>				</div>
 						<div class="elementor-element elementor-element-785c7230 elementor-widget elementor-widget-heading" data-id="785c7230" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
 					<h2 class="elementor-heading-title elementor-size-default">TEMPO PROMOCIONAL EXPIRA EM:</h2>				</div>
 				<div class="elementor-element elementor-element-513e1e6 elementor-countdown--label-block elementor-widget elementor-widget-countdown" data-id="513e1e6" data-element_type="widget" data-e-type="widget" data-widget_type="countdown.default">
-							<div data-evergreen-interval="540" class="elementor-countdown-wrapper" data-date="">
+							<div data-evergreen-interval="30" class="elementor-countdown-wrapper" data-date="">
 			<div class="elementor-countdown-item"><span class="elementor-countdown-digits elementor-countdown-hours"></span> <span class="elementor-countdown-label">Horas</span></div><div class="elementor-countdown-item"><span class="elementor-countdown-digits elementor-countdown-minutes"></span> <span class="elementor-countdown-label">Minutos</span></div><div class="elementor-countdown-item"><span class="elementor-countdown-digits elementor-countdown-seconds"></span> <span class="elementor-countdown-label">Segundos</span></div>		</div>
 						</div>
 					</div>
@@ -1381,14 +1381,68 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 //# sourceURL=https://cursivas.licaokids.com.br/wp-includes/js/wp-emoji-loader.min.js
 </script>
 	<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"9e98f1b34e32433bb5ed60f8e6df7794","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+
+<script>
+(function(){
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function initEvergreenCountdown(wrapper){
+    var mins = parseInt(wrapper.getAttribute('data-evergreen-interval') || '30', 10);
+    if(!mins || mins < 1) mins = 30;
+
+    // um timer por página (não reseta quando recarrega)
+    var key = 'evergreen_deadline_' + location.pathname;
+    var now = Date.now();
+    var deadline = parseInt(localStorage.getItem(key) || '0', 10);
+
+    if(!deadline || deadline < now){
+      deadline = now + mins * 60 * 1000;
+      localStorage.setItem(key, String(deadline));
+    }
+
+    var hEl = wrapper.querySelector('.elementor-countdown-hours');
+    var mEl = wrapper.querySelector('.elementor-countdown-minutes');
+    var sEl = wrapper.querySelector('.elementor-countdown-seconds');
+
+    function tick(){
+      var t = deadline - Date.now();
+      if(t < 0) t = 0;
+
+      var total = Math.floor(t/1000);
+      var hours = Math.floor(total/3600);
+      var minutes = Math.floor((total%3600)/60);
+      var seconds = total%60;
+
+      if(hEl) hEl.textContent = pad(hours);
+      if(mEl) mEl.textContent = pad(minutes);
+      if(sEl) sEl.textContent = pad(seconds);
+
+      // quando zera, reinicia automático (opcional)
+      if(total === 0){
+        localStorage.removeItem(key);
+      }
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.elementor-countdown-wrapper[data-evergreen-interval]')
+      .forEach(initEvergreenCountdown);
+  });
+})();
+</script>
+
+
 </body>
 
-<!-- Mirrored from cursivas.licaokids.com.br/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 24 Feb 2026 02:41:23 GMT -->
+
 
 </html>
 
 
-<!-- Page cached by LiteSpeed Cache 7.7 on 2026-02-23 21:03:38 -->
+
 
 
 
